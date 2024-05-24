@@ -1,0 +1,10 @@
+{:paths ["src/main" "resources"]
+ :deps  {re-frame/re-frame       {:mvn/version "1.2.0"}
+         clj-commons/secretary   {:mvn/version "1.2.4"}
+         kibu/pushy              {:mvn/version "0.3.8"}
+         metosin/reitit-frontend {:mvn/version "0.7.0"}}
+ :aliases
+ {:dev {:extra-paths ["src/dev" "target"]
+        :extra-deps {com.bhauman/figwheel-main       {:mvn/version "0.2.15"}
+                     com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}}
+  :build {:main-opts ["-m" "figwheel.main" "--build" "dev" "--repl"]}}}
