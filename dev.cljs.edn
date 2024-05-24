@@ -1,0 +1,3 @@
+^{:watch-dirs ["src/dev" "src/main"]
+  :css-dirs ["resources/public/css"]}
+{:main com.yetanalytics.re-route-demo}
