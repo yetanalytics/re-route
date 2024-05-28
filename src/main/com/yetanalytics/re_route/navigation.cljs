@@ -90,9 +90,10 @@
 (re-frame/reg-event-fx
  ::navigate-back
  (fn [{:keys [db]} [_ prev-path path]]
-   (let [{:keys [text] :as prevent-nav}
+   (let [{:keys [text back-button?] :as prevent-nav}
          (:com.yetanalytics.re-route/prevent-nav db)]
-     (if (nil? prevent-nav)
+     (if (or (nil? prevent-nav)
+             (not back-button?))
        {:fx [[:dispatch [::on-navigate path]]]}
        (if (js/confirm text)
          {:fx [[:dispatch [::unset-prevent-nav [::on-navigate path]]]]}
@@ -100,4 +101,5 @@
          ;; Note that this causes strange behaviors if it was the forward button
          ;; that was pressed, or if the user went back multiple pages, but
          ;; not much we can do there ¯\_(ツ)_/¯
-         (push-state prev-path))))))
+         (do (println "Pushing History!")
+             {::push-fx prev-path}))))))

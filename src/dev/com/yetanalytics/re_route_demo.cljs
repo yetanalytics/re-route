@@ -392,13 +392,17 @@
 (re-frame/reg-event-fx
  ::init-db
  (fn [_ _]
-   {:db {:page-one {:uuid        nil
-                    :string      "Yet Analytics"
-                    :edit-buffer ""}
-         :page-two {:uuid        nil
-                    :string      "Supercalifragilisticexpialidocious!"
-                    :edit-buffer ""}}
-    :fx [[:dispatch [::re-route/init routes :not-found]]]}))
+   {:db {:page-one   {:uuid        nil
+                      :string      "Yet Analytics"
+                      :edit-buffer ""}
+         :page-two   {:uuid        nil
+                      :string      "Supercalifragilisticexpialidocious!"
+                      :edit-buffer ""}
+         :page-three {:edit-buffer {:path-param  ""
+                                    :query-param ""
+                                    :fragment    ""}}}
+    :fx [[:dispatch [::re-route/init routes :not-found {:enabled?     true
+                                                        :back-button? true}]]]}))
 
 (defn mount [element]
   (rdom/render [main-view] element))

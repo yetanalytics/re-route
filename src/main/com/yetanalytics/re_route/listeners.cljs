@@ -129,7 +129,6 @@
 (re-frame/reg-event-fx
  ::on-beforeunload
  (fn [{:keys [db]} [_ event]]
-   (println "Beforeunload triggered!")
    (if-some [{:keys [text] :as _prevent-nav}
              (:com.yetanalytics.re-route/prevent-nav db)]
      {::on-beforeunload-fx [text event]}

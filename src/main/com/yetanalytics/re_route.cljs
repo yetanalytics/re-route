@@ -6,9 +6,6 @@
             [com.yetanalytics.re-route.navigation :as nav]
             [com.yetanalytics.re-route.path       :as path]))
 
-(def default-prevent-nav-text
-  "You have unsaved changes, are you sure?")
-
 ;; TODO: Use :as-alias to compress `:com.yetanalytics.re-route` into
 ;; `::re-route` in the other namespaces, once we update to Clojure 1.11+.
 
@@ -94,16 +91,29 @@
 ;; Init Handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def default-prevent-nav-text
+  "You have unsaved changes, are you sure?")
+
+(def default-prevent-nav-opts
+  {:enabled?     true
+   :back-button? false
+   :default-text default-prevent-nav-text})
+
 (re-frame/reg-event-fx
  ::init
  [(re-frame/inject-cofx :current-path)]
  (fn [{:keys [db current-path]} [_ routes default-route prevent-nav-opts]]
    (let [router        (rf/router routes)
-         default-match (rf/match-by-name router default-route)]
-     {:db (merge db {::routes      {:current nil
-                                    :default default-match}
-                     ::router      router
-                     ::prevent-nav nil})
+         default-match (rf/match-by-name router default-route)
+         {:keys [enabled? back-button? default-text]}
+         (merge default-prevent-nav-opts prevent-nav-opts)]
+     {:db (merge db {::routes           {:current nil
+                                         :default default-match}
+                     ::router           router
+                     ::prevent-nav      nil
+                     ::prevent-nav-opts {:enabled?     enabled?
+                                         :back-button? back-button?
+                                         :default-text default-text}})
       :fx [[:dispatch [::nav/on-navigate current-path]]]
       ::listen/start prevent-nav-opts})))
 
@@ -150,10 +160,14 @@
 (re-frame/reg-event-fx
  ::set-prevent-nav
  (fn [{:keys [db]} [_ text]]
-   (let [text (or (not-empty text)
-                  default-prevent-nav-text)
-         prevent-nav {:text text}]
-     {:db (assoc db ::prevent-nav prevent-nav)})))
+   (let [{:keys [enabled? back-button? default-text]} (::prevent-nav-opts db)]
+     (if enabled?
+       (let [dialog-text (or (not-empty text)
+                             default-text)
+             prevent-nav {:text         dialog-text
+                          :back-button? back-button?}]
+         {:db (assoc db ::prevent-nav prevent-nav)})
+       {}))))
 
 (re-frame/reg-event-fx
  ::unset-prevent-nav
