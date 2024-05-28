@@ -113,8 +113,8 @@
 
 (re-frame/reg-sub
  ::href
- (fn [db [_ route-name path-params]]
-   (path/href (::router db) route-name path-params nil nil)))
+ (fn [db [_ route-name path-params query-params fragment]]
+   (path/href (::router db) route-name path-params query-params fragment)))
 
 ;; Controllers
 

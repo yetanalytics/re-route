@@ -55,6 +55,29 @@
  (fn [db _]
    (get-in db [:page-two :edit-buffer])))
 
+(re-frame/reg-sub
+ :page-three-edit
+ (fn [db [_ key]]
+   (get-in db [:page-three :edit-buffer key])))
+
+(re-frame/reg-sub
+ :page-three-params/path
+ :<- [::re-route/path-params :pages/three]
+ (fn [{:keys [path-param]} _]
+   (js/decodeURIComponent path-param)))
+
+(re-frame/reg-sub
+ :page-three-params/query
+ :<- [::re-route/query-params :pages/three]
+ (fn [{:keys [query-param]} _]
+   (js/decodeURIComponent query-param)))
+
+(re-frame/reg-sub
+ :page-three-params/fragment
+ :<- [::re-route/fragment :pages/three]
+ (fn [fragment _]
+   (js/decodeURIComponent fragment)))
+
 ;; Controllers: Using on-start/on-stop multimethods
 
 (defmethod re-route/on-start :pages.one/view [{:keys [db]} _]
@@ -92,6 +115,19 @@
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:page-two :edit-buffer] "")}))
 
+(re-frame/reg-event-fx
+ :start.pages/three
+ (fn [{:keys [db]} [_ {:keys [path-param query-param fragment]}]]
+   {:db (assoc-in db [:page-three :edit-buffer]
+                  {:path-param  (js/decodeURIComponent path-param)
+                   :query-param (js/decodeURIComponent query-param)
+                   :fragment    (js/decodeURIComponent fragment)})}))
+
+(re-frame/reg-event-fx
+ :stop.pages/three
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:page-three :edit-buffer] {})}))
+
 ;; Text fields
 
 (re-frame/reg-event-fx
@@ -105,6 +141,11 @@
    {:db (assoc-in db [:page-two :edit-buffer] text)}))
 
 (re-frame/reg-event-fx
+ :set-text.pages/three
+ (fn [{:keys [db]} [_ key text]]
+   {:db (assoc-in db [:page-three :edit-buffer key] text)}))
+
+(re-frame/reg-event-fx
  :save-text.pages/one
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:page-one :string] (get-in db [:page-one :edit-buffer]))
@@ -115,6 +156,17 @@
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:page-two :string] (get-in db [:page-two :edit-buffer]))
     :fx [[:dispatch [::re-route/navigate-replace :pages.two/edit {} {:saved true}]]]}))
+
+(re-frame/reg-event-fx
+ :save-text.pages/three
+ (fn [{:keys [db]} _]
+   (let [{:keys [path-param query-param fragment]}
+         (get-in db [:page-three :edit-buffer])]
+     {:fx [[:dispatch [::re-route/navigate-replace
+                       :pages/three
+                       {:path-param (js/encodeURIComponent path-param)}
+                       {:query-param (js/encodeURIComponent query-param)}
+                       (js/encodeURIComponent fragment)]]]})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Views
@@ -127,6 +179,8 @@
     "Link to Page One"]
    [:a {:href @(subscribe [::re-route/href :pages.two/view])}
     "Link to Page Two"]
+   [:a {:href @(subscribe [::re-route/href :pages/three {:path-param "default"} {:query-param "default"} "default"])}
+    "Link to Page Three"]
    [:a {:href "https://www.yetanalytics.com/"}
     "Link to the Yet Analytics Website"]])
 
@@ -212,6 +266,61 @@
                  (dispatch [::re-route/navigate :pages.two/view]))}
     "Return Button"]])
 
+(defn edit-three []
+  [:div {:id "view-three"}
+   [:h1 "View Three"]
+   [:div
+    [:h2 "Current Parameters:"]
+    [:p "Path: " @(subscribe [:page-three-params/path])]
+    [:p "Query: " @(subscribe [:page-three-params/query])]
+    [:p "Fragment: " @(subscribe [:page-three-params/fragment])]]
+   [:div
+    [:h2 "New Parameters:"]
+    (when @(subscribe [::re-route/prevent-nav])
+      [:p "Unsaved changes have been made."])
+    [:p "Path:"]
+    [:input
+     {:name (random-uuid)
+      :type "text"
+      :value @(subscribe [:page-three-edit :path-param])
+      :on-change (fn [e]
+                   (.preventDefault e)
+                   (.stopPropagation e)
+                   (let [v (.. e -target -value)]
+                     (dispatch [::re-route/set-prevent-nav])
+                     (dispatch [:set-text.pages/three :path-param v])))}]
+    [:p "Query:"]
+    [:input
+     {:name (random-uuid)
+      :type "text"
+      :value @(subscribe [:page-three-edit :query-param])
+      :on-change (fn [e]
+                   (.preventDefault e)
+                   (.stopPropagation e)
+                   (let [v (.. e -target -value)]
+                     (dispatch [::re-route/set-prevent-nav])
+                     (dispatch [:set-text.pages/three :query-param v])))}]
+    [:p "Fragment:"]
+    [:input
+     {:name (random-uuid)
+      :type "text"
+      :value @(subscribe [:page-three-edit :fragment])
+      :on-change (fn [e]
+                   (.preventDefault e)
+                   (.stopPropagation e)
+                   (let [v (.. e -target -value)]
+                     (dispatch [::re-route/set-prevent-nav])
+                     (dispatch [:set-text.pages/three :fragment v])))}]
+    [:button
+     {:on-click (fn [e]
+                  (.preventDefault e)
+                  (.stopPropagation e)
+                  (dispatch [::re-route/unset-prevent-nav])
+                  (dispatch [:save-text.pages/three]))}
+     "Set Parameters"]
+    [:a {:href @(subscribe [::re-route/href :pages/home])}
+     "Home"]]])
+
 (defn main-view []
   []
   (when-some [page @(subscribe [::re-route/route-view])]
@@ -257,6 +366,21 @@
                                 (dispatch [:start.pages.two/edit params]))
                     :stop     (fn [params]
                                 (dispatch [:stop.pages.two/edit params]))}]}]
+   ["/three/:path-param/view"
+    {:name        :pages/three
+     :view        edit-three
+     :parameters  {:path  [:path-param]
+                   :query [:query-param]}
+     :controllers [{:identity (fn [{{:keys [path-param]}  :path-params
+                                    {:keys [query-param]} :query-params
+                                    fragment              :fragment}]
+                                {:path-param  path-param
+                                 :query-param query-param
+                                 :fragment    fragment})
+                    :start    (fn [params]
+                                (dispatch [:start.pages/three params]))
+                    :stop     (fn [params]
+                                (dispatch [:stop.pages/three params]))}]}]
    ["/not-found"
     {:name :not-found
      :view not-found}]])
