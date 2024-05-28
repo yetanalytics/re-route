@@ -107,12 +107,14 @@
 (re-frame/reg-event-fx
  :save-text.pages/one
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:page-one :string] (get-in db [:page-one :edit-buffer]))}))
+   {:db (assoc-in db [:page-one :string] (get-in db [:page-one :edit-buffer]))
+    :fx [[:dispatch [::re-route/navigate-replace :pages.one/edit {} {:saved true}]]]}))
 
 (re-frame/reg-event-fx
  :save-text.pages/two
  (fn [{:keys [db]} _]
-   {:db (assoc-in db [:page-two :string] (get-in db [:page-two :edit-buffer]))}))
+   {:db (assoc-in db [:page-two :string] (get-in db [:page-two :edit-buffer]))
+    :fx [[:dispatch [::re-route/navigate-replace :pages.two/edit {} {:saved true}]]]}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Views
