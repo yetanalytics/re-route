@@ -4,7 +4,8 @@
          kibu/pushy              {:mvn/version "0.3.8"}
          metosin/reitit-frontend {:mvn/version "0.7.0"}}
  :aliases
- {:dev {:extra-paths ["src/dev" "target"]
-        :extra-deps {com.bhauman/figwheel-main       {:mvn/version "0.2.15"}
-                     com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}}
-  :build {:main-opts ["-m" "figwheel.main" "--build" "dev" "--repl"]}}}
+ {:fig  {:extra-paths ["src/dev" "target"]
+         :extra-deps {com.bhauman/figwheel-main       {:mvn/version "0.2.15"}
+                      com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}}
+  :dev  {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
+  :prod {:main-opts ["-m" "figwheel.main" "-O" "advanced" "-bo" "prod"]}}}

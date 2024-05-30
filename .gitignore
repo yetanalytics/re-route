@@ -16,3 +16,4 @@ pom.xml.asc
 .lsp/
 .calva/
 .cljs_node_repl/
+node_modules/
