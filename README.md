@@ -8,7 +8,7 @@ This library comes with a demo that demonstrates the functionality of re-route. 
 
 To run via Figwheel, run `make dev`.
 
-To compile the webpage, run `make prod`, which will create a `target/bundle` directory. Then to run the webpage on an nginx Docker image, run:
+To compile the webpage, run `make bundle`, which will create a `target/bundle` directory. Then to run the webpage on an nginx Docker image, run:
 ```
 docker build -t re-route-nginx-image .
 ```
