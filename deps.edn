@@ -1,7 +1,5 @@
 {:paths ["src/main" "resources"]
  :deps  {re-frame/re-frame       {:mvn/version "1.2.0"}
-         clj-commons/secretary   {:mvn/version "1.2.4"}
-         kibu/pushy              {:mvn/version "0.3.8"}
          metosin/reitit-frontend {:mvn/version "0.7.0"}}
  :aliases
  {:fig  {:extra-paths ["src/dev" "target"]
