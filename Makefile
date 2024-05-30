@@ -1,4 +1,4 @@
-.PHONY: clean node_modules dev prod
+.PHONY: clean node_modules dev bundle
 
 clean:
 	rm -rf target *.log node_modules
