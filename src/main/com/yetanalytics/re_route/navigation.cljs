@@ -103,5 +103,4 @@
          ;; Note that this causes strange behaviors if it was the forward button
          ;; that was pressed, or if the user went back multiple pages, but
          ;; not much we can do there ¯\_(ツ)_/¯
-         (do (println "Pushing History!")
-             {::push-fx prev-path}))))))
+         {::push-fx prev-path})))))
