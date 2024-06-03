@@ -4,7 +4,8 @@
             [reitit.frontend :as rf]
             [com.yetanalytics.re-route.listeners  :as listen]
             [com.yetanalytics.re-route.navigation :as nav]
-            [com.yetanalytics.re-route.path       :as path]))
+            [com.yetanalytics.re-route.path       :as path]
+            [com.yetanalytics.re-route.spec       :as spec]))
 
 ;; TODO: Use :as-alias to compress `:com.yetanalytics.re-route` into
 ;; `::re-route` in the other namespaces, once we update to Clojure 1.11+.
@@ -101,7 +102,8 @@
 
 (re-frame/reg-event-fx
  ::init
- [(re-frame/inject-cofx :current-path)]
+ [(re-frame/inject-cofx :current-path)
+  (spec/spec-interceptor :init)]
  (fn [{:keys [db current-path]} [_ routes default-route prevent-nav-opts]]
    (let [router        (rf/router routes)
          default-match (rf/match-by-name router default-route)
@@ -159,6 +161,7 @@
 
 (re-frame/reg-event-fx
  ::set-prevent-nav
+ [(spec/spec-interceptor ::set-prevent-nav)]
  (fn [{:keys [db]} [_ text]]
    (let [{:keys [enabled? back-button? default-text]} (::prevent-nav-opts db)]
      (if enabled?
@@ -171,6 +174,7 @@
 
 (re-frame/reg-event-fx
  ::unset-prevent-nav
+ [(spec/spec-interceptor ::unset-prevent-nav)]
  (fn [{:keys [db]} _]
    {:db (assoc db ::prevent-nav nil)}))
 

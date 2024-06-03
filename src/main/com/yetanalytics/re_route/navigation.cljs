@@ -1,7 +1,8 @@
 (ns com.yetanalytics.re-route.navigation
   (:require [re-frame.core :as re-frame]
             [reitit.frontend :as rf]
-            [reitit.frontend.controllers :as rfc]))
+            [reitit.frontend.controllers :as rfc]
+            [com.yetanalytics.re-route.spec :as spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; History stack manipulation
@@ -35,6 +36,7 @@
 
 (re-frame/reg-event-fx
  ::on-navigate
+ [(spec/spec-interceptor ::on-navigate)]
  (fn [{:keys [db]} [_ path]]
    (let [{default-route-match :default
           old-route-match     :current}
