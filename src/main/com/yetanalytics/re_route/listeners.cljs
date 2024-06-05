@@ -87,33 +87,19 @@
 ;; Back Button Listeners
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(re-frame/reg-fx
- ::on-popstate-fx
- (fn [[prev-path current-path]]
-   (re-frame/dispatch [::nav/navigate-back prev-path current-path])))
-
-(re-frame/reg-event-fx
- ::on-popstate
- [(re-frame/inject-cofx :current-path)]
- (fn [{:keys [db current-path]} _]
-   (let [prev-path (-> db :com.yetanalytics.re-route/routes :current :path)]
-     {::on-popstate-fx [prev-path current-path]})))
+(defn- on-popstate
+  [_event]
+  (re-frame/dispatch-sync [::nav/navigate-back]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Anchor Tag + Button Listeners
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(re-frame/reg-fx
- ::on-click-fx
- (fn [event]
-   (when-let [path (path-for-ignore-click event)]
-     (prevent-default! event)
-     (re-frame/dispatch [::nav/navigate path]))))
-
-(re-frame/reg-event-fx
- ::on-click
- (fn [_ [_ event]]
-   {::on-click-fx event}))
+(defn- on-click
+  [event]
+  (when-let [path (path-for-ignore-click event)]
+    (prevent-default! event)
+    (re-frame/dispatch [::nav/navigate path])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Browser URL Listeners
@@ -134,6 +120,10 @@
      {::on-beforeunload-fx [text event]}
      {})))
 
+(defn- on-beforeupload
+  [event]
+  (re-frame/dispatch-sync [::on-beforeunload event]))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Listener start and stop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,25 +133,18 @@
   (let [;; TODO: We ought to only listen to beforeunload when prevent-nav is
         ;; true, in order to avoid performance penalities (esp. on Firefox)
         ;; See: https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#usage_notes
-        beforeunload-key
-        (gevents/listen
-         js/window
-         goog.events.EventType.BEFOREUNLOAD
-         (fn [event]
-           (re-frame/dispatch-sync [::on-beforeunload event])))
-        popstate-key
-        (gevents/listen
-         js/window
-         goog.events.EventType.POPSTATE
-         (fn [event]
-           (re-frame/dispatch-sync [::on-popstate event]))
-         false)
-        click-key
-        (gevents/listen
-         js/document
-         goog.events.EventType.CLICK
-         (fn [event]
-           (re-frame/dispatch-sync [::on-click event])))]
+        beforeunload-key (gevents/listen js/window
+                                         goog.events.EventType.BEFOREUNLOAD
+                                         on-beforeupload
+                                         false)
+        popstate-key (gevents/listen js/window
+                                     goog.events.EventType.POPSTATE
+                                     on-popstate
+                                     false)
+        click-key (gevents/listen js/document
+                                  goog.events.EventType.CLICK
+                                  on-click
+                                  false)]
     (re-frame/dispatch [::set-listener-keys {:beforeunload beforeunload-key
                                              :popstate     popstate-key
                                              :click        click-key}])))
