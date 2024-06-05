@@ -1,6 +1,5 @@
 (ns com.yetanalytics.re-route.listeners
-  (:require [goog.events :as gevents]
-            [goog.Uri]
+  (:require [goog.Uri]
             [re-frame.core :as re-frame]
             [com.yetanalytics.re-route.navigation :as nav]
             [com.yetanalytics.re-route.path :as path]))
@@ -33,10 +32,9 @@
   fallback to target property if not available"
   ^{:see-also ["reitit.frontend.history/event-target"]}
   [event]
-  (let [original-event (.getBrowserEvent event)]
-    (if (exists? (.-composedPath original-event))
-      (aget (.composedPath original-event) 0)
-      (.-target event))))
+  (if (exists? (.-composedPath event))
+    (aget (.composedPath event) 0)
+    (.-target event)))
 
 (defn ignore-anchor-click?
   ^{:see-also ["reitit.frontend.history/ignore-anchor-click?"]}
@@ -61,27 +59,6 @@
     (let [uri (path/element-uri element)]
       (when (ignore-anchor-click? event element uri)
         (path/uri->path uri)))))
-
-(re-frame/reg-event-fx
- ::unset-prevent-nav
- (fn [{:keys [db]} _]
-   (let [listener-keys (:com.yetanalytics.re-route/listener-keys db)]
-     {:db (assoc db :com.yetanalytics.re-route/prevent-nav nil)
-      ::stop-beforeunload listener-keys})))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Listener Keys
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(re-frame/reg-event-fx
- ::set-listener-key
- (fn [{:keys [db]} [_ k v]]
-   {:db (assoc-in db [:com.yetanalytics.re-route/listener-keys k] v)}))
-
-(re-frame/reg-event-db
- ::set-listener-keys
- (fn [db [_ keys-m]]
-   (assoc db :com.yetanalytics.re-route/listener-keys keys-m)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Back Button Listeners
@@ -120,7 +97,7 @@
      {::on-beforeunload-fx [text event]}
      {})))
 
-(defn- on-beforeupload
+(defn- on-beforeunload
   [event]
   (re-frame/dispatch-sync [::on-beforeunload event]))
 
@@ -128,35 +105,24 @@
 ;; Listener start and stop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(def type-beforeunload "beforeunload")
+(def type-popstate "popstate")
+(def type-click "click")
+
 (defn- start-event-listeners!
   []
-  (let [;; TODO: We ought to only listen to beforeunload when prevent-nav is
-        ;; true, in order to avoid performance penalities (esp. on Firefox)
-        ;; See: https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#usage_notes
-        beforeunload-key (gevents/listen js/window
-                                         goog.events.EventType.BEFOREUNLOAD
-                                         on-beforeupload
-                                         false)
-        popstate-key (gevents/listen js/window
-                                     goog.events.EventType.POPSTATE
-                                     on-popstate
-                                     false)
-        click-key (gevents/listen js/document
-                                  goog.events.EventType.CLICK
-                                  on-click
-                                  false)]
-    (re-frame/dispatch [::set-listener-keys {:beforeunload beforeunload-key
-                                             :popstate     popstate-key
-                                             :click        click-key}])))
+  ;; TODO: We ought to only listen to beforeunload when prevent-nav is
+  ;; true, in order to avoid performance penalities (esp. on Firefox)
+  ;; See: https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#usage_notes
+  (.addEventListener js/window type-beforeunload on-beforeunload)
+  (.addEventListener js/window type-popstate on-popstate)
+  (.addEventListener js/document type-click on-click))
 
 (defn- stop-event-listeners!
-  [{:keys [beforeunload popstate click]}]
-  (gevents/unlistenByKey beforeunload)
-  (gevents/unlistenByKey popstate)
-  (gevents/unlistenByKey click)
-  (re-frame/dispatch [::set-listener-keys {:beforeunload nil
-                                           :popstate     nil
-                                           :click        nil}]))
+  []
+  (.removeEventListener js/window type-beforeunload on-beforeunload)
+  (.removeEventListener js/window type-popstate on-popstate)
+  (.removeEventListener js/document type-click on-click))
 
 (re-frame/reg-fx
  ::start
@@ -164,4 +130,4 @@
 
 (re-frame/reg-fx
  ::stop
- (fn [listener-keys] (stop-event-listeners! listener-keys)))
+ (fn [_] (stop-event-listeners!)))
