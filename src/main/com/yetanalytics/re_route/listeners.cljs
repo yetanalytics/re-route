@@ -44,11 +44,12 @@
   ^{:see-also ["reitit.frontend.history/ignore-anchor-click?"]}
   [event element uri]
   (and
+   ;; Anchor tag must have href attribute
+   (path/has-scheme? uri)
+   (path/has-domain? uri)
    ;; Doesn't go to another domain
-   (or (and (not (path/has-scheme? uri))
-            (not (path/has-domain? uri)))
-       (= (some-> (path/location-uri) path/get-domain)
-          (path/get-domain uri)))
+   (= (some-> (path/location-uri) path/get-domain)
+      (path/get-domain uri))
    ;; Not a key + click event
    (not (.-altKey event))
    (not (.-ctrlKey event))
