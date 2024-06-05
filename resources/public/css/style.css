@@ -8,6 +8,12 @@ a {
     margin-right: 10px;
 }
 
+a.link-like {
+    color: indigo; /* works for chrome at least */
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 input {
     margin-right: 10px;
 }

@@ -146,10 +146,20 @@
    {:db (assoc-in db [:page-three :edit-buffer key] text)}))
 
 (re-frame/reg-event-fx
+ :save-text.pages/one*
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:page-one :string] (get-in db [:page-one :edit-buffer]))}))
+
+(re-frame/reg-event-fx
  :save-text.pages/one
  (fn [{:keys [db]} _]
    {:db (assoc-in db [:page-one :string] (get-in db [:page-one :edit-buffer]))
     :fx [[:dispatch [::re-route/navigate-replace :pages.one/edit {} {:saved true}]]]}))
+
+(re-frame/reg-event-fx
+ :save-text.pages/two*
+ (fn [{:keys [db]} _]
+   {:db (assoc-in db [:page-two :string] (get-in db [:page-two :edit-buffer]))}))
 
 (re-frame/reg-event-fx
  :save-text.pages/two
@@ -234,6 +244,15 @@
     {:href @(subscribe [::re-route/href :pages.one/view])}
     "Return Link"]
    [:a
+    {:class    "link-like"
+     :on-click (fn [_]
+                 ;; Deliberately not prevent default action, to see that
+                 ;; the event gets intercepted by the on-click listener
+                 (dispatch [::re-route/unset-prevent-nav])
+                 (dispatch [:save-text.pages/one*])
+                 (dispatch [::re-route/navigate :pages.one/view]))}
+    "Save and Return Link"]
+   [:a
     {:href "http://yetanalytics.com"}
     "Link to Yet Analytics Website"]])
 
@@ -264,7 +283,15 @@
                  (.preventDefault e)
                  (.stopPropagation e)
                  (dispatch [::re-route/navigate :pages.two/view]))}
-    "Return Button"]])
+    "Return Button"]
+   [:button
+    {:on-click (fn [e]
+                 (.preventDefault e)
+                 (.stopPropagation e)
+                 (dispatch [::re-route/unset-prevent-nav])
+                 (dispatch [:save-text.pages/two*])
+                 (dispatch [::re-route/navigate :pages.two/view]))}
+    "Save and Return Button"]])
 
 (defn edit-three []
   [:div {:id "view-three"}
