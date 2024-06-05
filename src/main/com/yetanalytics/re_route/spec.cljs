@@ -1,9 +1,7 @@
 (ns com.yetanalytics.re-route.spec
   (:require [clojure.spec.alpha :as s]
             [re-frame.core      :as re-frame]
-            [reitit.spec        :as rs]
-            [goog.string]
-            [goog.string.format]))
+            [reitit.spec        :as rs]))
 
 ;; route + router specs
 
@@ -63,10 +61,9 @@
 (defn validate-db
   [handler-name db-spec db]
   (when-not (s/valid? db-spec db)
-    (throw (ex-info (goog.string/format "Spec check failed in %s:\n%s"
-                                        handler-name
-                                        (s/explain-str db-spec db))
-                    {}))))
+    (let [msg* (str "Spec check failed in " handler-name ":")
+          msg  (str msg* "\n" (s/explain-str db-spec db))]
+      (throw (ex-info msg {})))))
 
 (defn spec-interceptor [handler-name]
   (re-frame/after (partial validate-db handler-name db-spec)))
