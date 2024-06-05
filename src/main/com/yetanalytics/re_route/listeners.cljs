@@ -1,6 +1,5 @@
 (ns com.yetanalytics.re-route.listeners
-  (:require [goog.Uri]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [com.yetanalytics.re-route.navigation :as nav]
             [com.yetanalytics.re-route.path :as path]))
 
@@ -12,50 +11,60 @@
   (.preventDefault event))
 
 (defn- set-event-return! [event v]
-  ;; `event.returnValue = v` in JavaScript
-  (set! (.. event -returnValue) v))
-
-(defn- closest-by-tag
-  ^{:see-also ["reitit.frontend.history/closest-by-tag"]}
-  [element tag]
-  ;; nodeName is upper case for HTML always,
-  ;; for XML or XHTML it would be in the original case.
-  (let [tag (.toUpperCase tag)]
-    (loop [el element]
-      (when el
-        (if (= tag (.-nodeName el))
-          el
-          (recur (.-parentNode el)))))))
+  (set! (.-returnValue event) v))
 
 (defn event-target
-  "Read event's target from composed path to get shadow dom working,
-  fallback to target property if not available"
+  "Get the element associated with the event."
   ^{:see-also ["reitit.frontend.history/event-target"]}
   [event]
   (if (exists? (.-composedPath event))
+    ;; Bottom-most composed path element
     (aget (.composedPath event) 0)
+    ;; No composed path, just return the event target
     (.-target event)))
 
+;; `nodeName` is upper case for HTML always,
+;; for XML or XHTML it would be in the original case
+(def anchor-tag "A")
+
+(defn- anchor-element
+  "Return the element (either `element` itself or a parent)
+   with the anchor tag `<a>`."
+  ^{:see-also ["reitit.frontend.history/closest-by-tag"]}
+  [element]
+  (loop [el element]
+    (when el
+      (if (= anchor-tag (.-nodeName el))
+        el
+        (recur (.-parentNode el))))))
+
 (defn ignore-anchor-click?
+  "Return whether the click event's default behavior (to reload the new
+   page) should be ignored or not."
   ^{:see-also ["reitit.frontend.history/ignore-anchor-click?"]}
   [event element uri]
-  (let [?current-domain (when (exists? js/location)
-                          (.getDomain (.parse goog.Uri js/location)))]
-    (and (or (and (not (.hasScheme uri))
-                  (not (.hasDomain uri)))
-             (= ?current-domain (.getDomain uri)))
-         (not (.-altKey event))
-         (not (.-ctrlKey event))
-         (not (.-metaKey event))
-         (not (.-shiftKey event))
-         (or (not (.hasAttribute element "target"))
-             (contains? #{"" "_self"} (.getAttribute element "target")))
-         (= 0 (.-button event))
-         (not (.-isContentEditable element)))))
+  (and
+   ;; Doesn't go to another domain
+   (or (and (not (path/has-scheme? uri))
+            (not (path/has-domain? uri)))
+       (= (some-> (path/location-uri) path/get-domain)
+          (path/get-domain uri)))
+   ;; Not a key + click event
+   (not (.-altKey event))
+   (not (.-ctrlKey event))
+   (not (.-metaKey event))
+   (not (.-shiftKey event))
+   ;; Does not open a new tab or window
+   (or (not (.hasAttribute element "target"))
+       (contains? #{"" "_self"} (.getAttribute element "target")))
+   ;; Is a left click
+   (= 0 (.-button event))
+   ;; Element is not editable (so no editing links)
+   (not (.-isContentEditable element))))
 
 (defn- path-for-ignore-click
   [event]
-  (when-let [element (closest-by-tag (event-target event) "a")]
+  (when-let [element (anchor-element (event-target event))]
     (let [uri (path/element-uri element)]
       (when (ignore-anchor-click? event element uri)
         (path/uri->path uri)))))

@@ -1,6 +1,7 @@
 (ns com.yetanalytics.re-route.path
   (:require [re-frame.core :as re-frame]
-            [reitit.frontend :as rf]))
+            [reitit.frontend :as rf]
+            [goog.Uri]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Current path
@@ -22,13 +23,31 @@
 ;; URI utils
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO: Move away from using goog.Uri, as the Google Closure Library
+;; is no longer being maintained.
+
+(defn location-uri
+  []
+  (when (exists? js/location)
+    (.parse goog.Uri js/location)))
+
 (defn element-uri
-  ^{:see-also ["reitit.frontend.history/Html5History"]}
   [element]
   (.parse goog.Uri (.-href element)))
 
+(defn has-scheme?
+  [uri]
+  (.hasScheme uri))
+
+(defn has-domain?
+  [uri]
+  (.hasDomain uri))
+
+(defn get-domain
+  [uri]
+  (.getDomain uri))
+
 (defn uri->path
-  ^{:see-also ["reitit.frontend.history/Html5History"]}
   [uri]
   (str (.getPath uri)
        (when (.hasQuery uri)
