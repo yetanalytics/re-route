@@ -105,13 +105,14 @@
          (:com.yetanalytics.re-route/routes db)
          {:keys [text back-button?] :as prevent-nav}
          (:com.yetanalytics.re-route/prevent-nav db)]
-     (if (or (nil? prevent-nav)
-             (not back-button?))
+     (if (nil? prevent-nav)
        {:fx [[:dispatch [::on-navigate current-path]]]}
-       (if (js/confirm text)
+       (if (not back-button?)
          {:fx [[:dispatch [::unset-prevent-nav [::on-navigate current-path]]]]}
-         ;; Restore where back button was before it was popped
-         ;; Note that this causes strange behaviors if it was the forward button
-         ;; that was pressed, or if the user went back multiple pages, but
-         ;; not much we can do there ¯\_(ツ)_/¯
-         {::push-fx prev-path})))))
+         (if (js/confirm text)
+           {:fx [[:dispatch [::unset-prevent-nav [::on-navigate current-path]]]]}
+           ;; Restore where back button was before it was popped
+           ;; Note that this causes strange behaviors if it was the forward button
+           ;; that was pressed, or if the user went back multiple pages, but
+           ;; not much we can do there ¯\_(ツ)_/¯
+           {::push-fx prev-path}))))))
