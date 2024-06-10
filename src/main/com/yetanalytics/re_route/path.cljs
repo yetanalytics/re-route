@@ -61,6 +61,9 @@
 
 (defn href
   ^{:see-also ["reitit.frontend.history/-href"]}
-  [router route-name path-params query-params fragment]
-  (let [match (rf/match-by-name! router route-name path-params)]
+  [router route-name ?path-params ?query-params ?fragment]
+  (let [path-params  (or ?path-params {})
+        query-params (or ?query-params {})
+        fragment     (or ?fragment "")
+        match        (rf/match-by-name! router route-name path-params)]
     (rf/match->path match query-params fragment)))
