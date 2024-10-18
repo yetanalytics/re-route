@@ -1,7 +1,6 @@
 # re-route
 
-[[CD][https://github.com/yetanalytics/re-route/actions/workflows/build.yml/badge.svg]]
-[[https://clojars.org/com.yetanalytics/re-route][https://img.shields.io/clojars/v/com.yetanalytics/re-route.svg]]
+[![Clojars Project](https://img.shields.io/clojars/v/com.yetanalytics/re-route.svg)](https://clojars.org/com.yetanalytics/re-route)
 
 Routing wrapper library for SPAs based on [re-frame](https://github.com/day8/re-frame) and [reitit](https://github.com/metosin/reitit).
 
