@@ -14,11 +14,11 @@ target/public/cljs-out/prod-main.js: node_modules
 
 target/demo_bundle/Dockerfile:
 	mkdir -p target/demo_bundle
-	cp dev-resources/Dockerfile target/demo_bundle/Dockerfile
+	cp dev-resources/nginx/Dockerfile target/demo_bundle/Dockerfile
 
 target/demo_bundle/nginx.conf:
 	mkdir -p target/demo_bundle
-	cp dev-resources/nginx.conf target/demo_bundle/nginx.conf
+	cp dev-resources/nginx/nginx.conf target/demo_bundle/nginx.conf
 
 target/demo_bundle/index.html:
 	mkdir -p target/demo_bundle
