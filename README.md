@@ -2,7 +2,7 @@
 
 Routing wrapper library for SPAs based on [re-frame](https://github.com/day8/re-frame) and [reitit](https://github.com/metosin/reitit).
 
-In addition to standard navigation functionality, this library comes with built-in functionality from navigation prevention, e.g. to warn the user of unsaved input changes.
+In addition to standard navigation functionality, this library comes with built-in functionality for navigation prevention, e.g. to warn the user of unsaved input changes.
 
 ## Installation
 
