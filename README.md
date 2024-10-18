@@ -15,6 +15,8 @@ To use re-route as a dependency in your ClojureScript project, add the following
 { com.yetanalytics/re-route {:mvn/version "0.1.0"} }
 ```
 
+For information on the latest version, as well as the changelog for previous versions, see the [Releases](https://github.com/yetanalytics/re-route/releases) page.
+
 **NOTE:** re-route assumes that your browser supports the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 
 ## API

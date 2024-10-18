@@ -28,3 +28,9 @@ jobs:
           version: ${{ steps.version.outputs.version }}
           clojars-username: ${{ secrets.CLOJARS_USERNAME }}
           clojars-deploy-token: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}
+    
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        body: "## Release Notes\nTODO: Create great release notes!"
+        draft: true
