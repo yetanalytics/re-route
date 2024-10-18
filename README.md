@@ -1,5 +1,7 @@
 # re-route
 
+[![Clojars Project](https://img.shields.io/clojars/v/com.yetanalytics/re-route.svg)](https://clojars.org/com.yetanalytics/re-route)
+
 Routing wrapper library for SPAs based on [re-frame](https://github.com/day8/re-frame) and [reitit](https://github.com/metosin/reitit).
 
 In addition to standard navigation functionality, this library comes with built-in functionality for navigation prevention, e.g. to warn the user of unsaved input changes.
@@ -9,8 +11,10 @@ In addition to standard navigation functionality, this library comes with built-
 To use re-route as a dependency in your ClojureScript project, add the following to your `deps.edn` file:
 
 ```clojure
-{ com.yetanalytics/re-route {:mvn/version "0.0.1"} }
+{ com.yetanalytics/re-route {:mvn/version "0.1.0"} }
 ```
+
+For information on the latest version, as well as the changelog for previous versions, see the [Releases](https://github.com/yetanalytics/re-route/releases) page.
 
 **NOTE:** re-route assumes that your browser supports the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 
