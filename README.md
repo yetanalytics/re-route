@@ -59,7 +59,21 @@ Unsets navigation prevention, allowing navigation to proceed as normal again.
 
 #### `[::re-route/on-start]` and `[::re-route/on-stop]`
 
-Calls the `on-start` and `on-stop` multimethods, respectively.
+Calls the `on-start` and `on-stop` multimethods, respectively. These multimethods are an alternative to defining the handlers directly; in other words, instead of writing this:
+
+```clojure
+{:start (fn [params] (dispatch [:start-my-page params]))}
+```
+
+one can write this:
+
+```clojure
+{:start (fn [params] (dispatch [::re-route/on-start :my-page params]))}
+
+(defmethod re-route/on-start :my-page [& params] ...)
+```
+
+The `add-controllers` function takes a `[path route-data]` pair and automatically applies a `:controllers` map with a pair of `::re-route/on-start` and `::re-route/on-stop` dispatch functions.
 
 ### Subscriptions
 
