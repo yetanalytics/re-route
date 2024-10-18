@@ -27,4 +27,4 @@ jobs:
           resource-dirs: '[]'
           version: ${{ steps.version.outputs.version }}
           clojars-username: ${{ secrets.CLOJARS_USERNAME }}
-          clojars-deploy-token: ${{ secrets.CLOJARS_PASSWORD }}
+          clojars-deploy-token: ${{ secrets.CLOJARS_DEPLOY_TOKEN }}

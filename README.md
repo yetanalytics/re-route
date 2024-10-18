@@ -3,7 +3,6 @@
 [[CD][https://github.com/yetanalytics/re-route/actions/workflows/build.yml/badge.svg]]
 [[https://clojars.org/com.yetanalytics/re-route][https://img.shields.io/clojars/v/com.yetanalytics/re-route.svg]]
 
-
 Routing wrapper library for SPAs based on [re-frame](https://github.com/day8/re-frame) and [reitit](https://github.com/metosin/reitit).
 
 In addition to standard navigation functionality, this library comes with built-in functionality for navigation prevention, e.g. to warn the user of unsaved input changes.
