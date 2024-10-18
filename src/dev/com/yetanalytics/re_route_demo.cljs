@@ -349,7 +349,6 @@
      "Home"]]])
 
 (defn main-view []
-  []
   (when-some [page @(subscribe [::re-route/route-view])]
     [page]))
 
