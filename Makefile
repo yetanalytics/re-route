@@ -22,11 +22,11 @@ target/demo_bundle/nginx.conf:
 
 target/demo_bundle/index.html:
 	mkdir -p target/demo_bundle
-	cp resources/public/index_prod.html target/demo_bundle/index.html
+	cp dev-resources/public/index_prod.html target/demo_bundle/index.html
 
 target/demo_bundle/css:
 	mkdir -p target/demo_bundle
-	cp -r resources/public/css target/demo_bundle/css
+	cp -r dev-resources/public/css target/demo_bundle/css
 
 target/demo_bundle/main.js: target/public/cljs-out/prod-main.js
 	mkdir -p target/demo_bundle

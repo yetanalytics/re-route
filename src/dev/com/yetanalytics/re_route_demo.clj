@@ -4,7 +4,7 @@
 
 (defn handler [request]
   (if (= :get (:request-method request))
-    (file-response "resources/public/")
+    (file-response "dev-resources/public/")
     {:status  405
      :headers {"Content-Type" "text/plain"}
      :body    "Unsupported Operation"}))

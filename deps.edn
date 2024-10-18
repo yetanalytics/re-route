@@ -1,8 +1,8 @@
-{:paths ["src/main" "resources"]
+{:paths ["src/main"]
  :deps  {re-frame/re-frame       {:mvn/version "1.2.0"}
          metosin/reitit-frontend {:mvn/version "0.7.0"}}
  :aliases
- {:fig  {:extra-paths ["src/dev" "target"]
+ {:fig  {:extra-paths ["src/dev" "dev-resources" "target"]
          :extra-deps {com.bhauman/figwheel-main       {:mvn/version "0.2.15"}
                       com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}}
   :dev  {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
