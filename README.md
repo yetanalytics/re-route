@@ -121,6 +121,22 @@ docker run --name re-route-nginx-container -p 9500:80 re-route-nginx-image
 ```
 which will serve the webpage on `localhost:9500`.
 
+### Screenshots
+
+Opening the webpage at `localhost:9500` will display the home page:
+![home page](doc/images/home.png)
+
+Click on "Link to Page One" to view Page One:
+![view page](doc/images/view.png)
+
+Click on "Edit" to edit the contents of Page One:
+![edit page](doc/images/edit_1.png)
+
+Editing the text, then clicking on "Return Link" will display a navigation prevention popup:
+![prevent navigation](doc/images/edit_2.png)
+
+Going to an external link (e.g. "Link to the Yet Analytics Website") will display a different dialog (corresponding to `beforeunload`):
+![prevent link navigation](doc/images/edit_3.png)
 
 ## Credits
 
