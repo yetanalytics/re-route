@@ -47,15 +47,15 @@ where `:controllers` contains the `:start` and `:stop` functions that are called
 
 #### `[::re-route/navigate route-name path-params query-params fragment]`
 
-Navigate to a new route with these parameters, and calls `.pushState` on the history stack.
+Navigate to a new route with these parameters, and calls [`.pushState`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState) on the history stack.
 
 #### `[::re-route/navigate-replace route-name path-params query-params fragment]`
 
-Same as `::re-route/navigate`, but calls `.replaceState` on the history stack instead.
+Same as `::re-route/navigate`, but calls [`.replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState) on the history stack instead. This will, unlike `.pushState`, _not_ push the current page onto the history stack.
 
 #### `[::re-route/set-prevent-nav ?text]`
 
-Sets navigation prevention, which will cause navigation away from the current page to trigger a confirm dialog. `?text` sets the confirm dialog text (for non-`beforeunload` dialogs).
+Sets navigation prevention, which will cause navigation away from the current page to trigger a confirm dialog. `?text` sets the confirm dialog text (for non-[`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) dialogs).
 
 #### `[::re-route/unset-prevent-nav]`
 
@@ -135,7 +135,7 @@ Click on "Edit" to edit the contents of Page One:
 Editing the text, then clicking on "Return Link" will display a navigation prevention popup:
 ![prevent navigation](doc/images/edit_2.png)
 
-Going to an external link (e.g. "Link to the Yet Analytics Website") will display a different dialog (corresponding to `beforeunload`):
+Going to an external link (e.g. "Link to the Yet Analytics Website") will display a different dialog (corresponding to a [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) event):
 ![prevent link navigation](doc/images/edit_3.png)
 
 ## Credits
