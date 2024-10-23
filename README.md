@@ -120,3 +120,9 @@ followed by
 docker run --name re-route-nginx-container -p 9500:80 re-route-nginx-image
 ```
 which will serve the webpage on `localhost:9500`.
+
+
+## Credits
+
+- [re-frame](https://github.com/day8/re-frame) and [reitit](https://github.com/metosin/reitit) serve as the foundations that re-route was built on.
+- [kee-frame](https://github.com/ingesolvoll/kee-frame) is another re-route and reitit-based navigation library that was developed independently (we were not even aware of its existence when developing re-route).
