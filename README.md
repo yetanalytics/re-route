@@ -135,7 +135,7 @@ Click on "Edit" to edit the contents of Page One:
 Editing the text, then clicking on "Return Link" will display a navigation prevention popup:
 ![prevent navigation](doc/images/edit_2.png)
 
-Going to an external link (e.g. "Link to the Yet Analytics Website") will display a different dialog (corresponding to a [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) event):
+Going to an external link (e.g. "Link to Yet Analytics Website") will display a different dialog (corresponding to a [`beforeunload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event) event):
 ![prevent link navigation](doc/images/edit_3.png)
 
 ## Credits
